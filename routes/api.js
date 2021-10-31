@@ -18,7 +18,7 @@ router.post("/api/workouts", ({ body }, res) => {
 // GET the last workout
 router.get("/api/workouts", (req, res) => {
   Workout.find({})
-    .sort({ date: -1 })
+    .sort({ day: -1 })
     .then(dbWorkout => {
         res.json(dbWorkout);
     })
@@ -27,10 +27,18 @@ router.get("/api/workouts", (req, res) => {
     });
 });
 
-// GET the last workouts in range
+// GET the last workouts in range of 7
 router.get("/api/workouts/range", (req, res) => {
-
-})
+    Workout.find( {} )
+    .sort({ day: -1 })
+    .then(dbWorkout => {
+        rngWorkout = dbWorkout.slice(0,7);
+        res.json(rngWorkout);
+    })
+    .catch(err => {
+        res.status(400).json("There was an error while getting workouts in range" + err);
+    });
+});
 
 router.get("/stats", (req, res) => {
     res.redirect("/stats.html");
