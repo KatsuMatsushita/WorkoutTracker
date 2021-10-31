@@ -1,7 +1,11 @@
 const router = require("express").Router();
 const Workout = require("../models/Workout.js");
 
-router.post("/api/Workout", ({ body }, res) => {
+router.put("/api/workouts", ({ body }, res) => {
+    Workout.updateOne(body)
+});
+
+router.post("/api/workouts", ({ body }, res) => {
   Workout.create(body)
     .then(dbWorkout => {
       res.json(dbWorkout);
@@ -26,6 +30,14 @@ router.get("/api/workouts", (req, res) => {
 // GET the last workouts in range
 router.get("/api/workouts/range", (req, res) => {
 
+})
+
+router.get("/stats", (req, res) => {
+    res.redirect("/stats.html");
+})
+
+router.get("/exercise", (req, res) => {
+    res.redirect("/exercise.html");
 })
 
 module.exports = router;
