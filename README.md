@@ -40,3 +40,16 @@ Each day is one workout, and the exercises are divided into Cardio and Resistanc
 2. Create a Branch and name it using the format: "feature_contributor"
 3. Create a pull request
 4. Send an email to the address listed in the Questions section, containing a summary of the contribution
+
+
+## License <a name="license"></a>
+MIT https://opensource.org/licenses/MIT
+A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.
+
+## Questions <a name="questions"></a>
+GitHub name: KatsuMatsushita
+
+[GitHub Profile](https://github.com/KatsuMatsushita)
+
+To contact me, drop an email to: katsu.matsushita@gmail.com
+
