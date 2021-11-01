@@ -28,8 +28,30 @@ router.post("/api/workouts", ({ body }, res) => {
 
 // GET the workouts
 router.get("/api/workouts", (req, res) => {
-  Workout.find({})
-    .sort({ day: -1 })
+//   Workout.find({})
+//     .sort({ day: 1 })
+//     .then(dbWorkout => {
+//         res.json(dbWorkout);
+//     }) This is much simpler, but doesn't have the aggregate's ability to get the totalDuration
+    Workout
+    .aggregate([
+        // first stage
+        { $sort: {day: 1}},
+        // second stage
+        { $set: {
+            totalDuration: {
+                // using a reduce function is necessary to access the array exercises and the objects within
+                // example: https://docs.mongodb.com/manual/reference/operator/aggregation/reduce/#exp._S_reduce  
+                $reduce: {
+                    input: "$exercises",
+                    initialValue: 0,
+                    in: {
+                        $add: ["$$value", "$$this.duration"]
+                    }
+                }
+            }
+        }},
+    ])
     .then(dbWorkout => {
         res.json(dbWorkout);
     })
@@ -43,7 +65,7 @@ router.get("/api/workouts", (req, res) => {
 router.get("/api/workouts/range", (req, res) => {
     Workout
     // .find( {} )
-    // .sort({ day: -1 })
+    // .sort({ day: 1 })
     // .limit(7)
     .aggregate([
         // first stage
@@ -74,10 +96,12 @@ router.get("/api/workouts/range", (req, res) => {
     });
 });
 
+// sends the stats.html to the browser
 router.get("/stats", (req, res) => {
     res.redirect("/stats.html");
 })
 
+// sends the exercise.html to the browser
 router.get("/exercise", (req, res) => {
     res.redirect("/exercise.html");
 })
