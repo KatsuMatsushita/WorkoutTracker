@@ -1,8 +1,19 @@
 const router = require("express").Router();
 const Workout = require("../models/Workout.js");
 
-router.put("/api/workouts", ({ body }, res) => {
-    Workout.updateOne(body)
+router.put("/api/workouts/:id", ( req, res) => {
+    Workout.updateOne(
+        {_id: req.params.id}, 
+        {$push: {
+            exercises: req.body}
+        }
+    )
+    .then(dbUpdate => {
+    res.json(dbUpdate);
+    })
+    .catch(err => {
+        res.status(400).json(`There was an error when trying to PUT to the database: ${err}`);
+    });
 });
 
 router.post("/api/workouts", ({ body }, res) => {
@@ -15,10 +26,10 @@ router.post("/api/workouts", ({ body }, res) => {
     });
 });
 
-// GET the last workout
+// GET the workouts
 router.get("/api/workouts", (req, res) => {
   Workout.find({})
-    .sort({ day: -1 })
+    .sort({ day: 1 })
     .then(dbWorkout => {
         res.json(dbWorkout);
     })
@@ -30,7 +41,7 @@ router.get("/api/workouts", (req, res) => {
 // GET the last workouts in range of 7
 router.get("/api/workouts/range", (req, res) => {
     Workout.find( {} )
-    .sort({ day: -1 })
+    .sort({ day: 1 })
     .then(dbWorkout => {
         rngWorkout = dbWorkout.slice(0,7);
         res.json(rngWorkout);
