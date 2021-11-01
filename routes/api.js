@@ -29,7 +29,7 @@ router.post("/api/workouts", ({ body }, res) => {
 // GET the workouts
 router.get("/api/workouts", (req, res) => {
   Workout.find({})
-    .sort({ day: 1 })
+    .sort({ day: -1 })
     .then(dbWorkout => {
         res.json(dbWorkout);
     })
@@ -39,12 +39,35 @@ router.get("/api/workouts", (req, res) => {
 });
 
 // GET the last workouts in range of 7
+// uses sort() to order them descending by date, then limit() to 7 items
 router.get("/api/workouts/range", (req, res) => {
-    Workout.find( {} )
-    .sort({ day: 1 })
+    Workout
+    // .find( {} )
+    // .sort({ day: -1 })
+    // .limit(7)
+    .aggregate([
+        // first stage
+        { $sort: {day: -1}},
+        // second stage
+        { $limit: 7 },
+        // third stage
+        { $set: {
+            totalDuration: {
+                // using a reduce function is necessary to access the array exercises and the objects within
+                // example: https://docs.mongodb.com/manual/reference/operator/aggregation/reduce/#exp._S_reduce  
+                $reduce: {
+                    input: "$exercises",
+                    initialValue: 0,
+                    in: {
+                        $add: ["$$value", "$$this.duration"]
+                    }
+                }
+            }
+        }},
+        //
+    ])
     .then(dbWorkout => {
-        rngWorkout = dbWorkout.slice(0,7);
-        res.json(rngWorkout);
+        res.json(dbWorkout);
     })
     .catch(err => {
         res.status(400).json("There was an error while getting workouts in range" + err);
